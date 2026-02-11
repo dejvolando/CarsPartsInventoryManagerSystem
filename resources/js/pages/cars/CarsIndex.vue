@@ -27,6 +27,7 @@ const formState = reactive({
 
 const isFormModalOpen = ref(false);
 
+//open edit/add modal form
 function openFormModal(mode: 'add' | 'edit', car?: Car ){
     isFormModalOpen.value = true;
     formState.mode = mode;
@@ -48,6 +49,13 @@ function openUpdateModal(car: Car){
     openFormModal('edit', car);
 }
 
+//close edit/add form
+function handleCloseFormModal(){
+  isFormModalOpen.value = false;
+  resetForm();
+}
+
+//open close delete modal
 const isDeleteModalOpen = ref(false);
 function openDeleteModal(car: Car){
     isDeleteModalOpen.value = true;
@@ -60,11 +68,8 @@ function closeDeleteModal(){
     resetForm();
 }
 
-function handleCloseModal(){
-    isFormModalOpen.value = false;
-    resetForm();
-}
 
+//submitting add/edit/delete
 function handleSubmitModal(){
     if(formState.mode === 'add'){
         create();
@@ -92,7 +97,7 @@ function create(){
             toast.success({
                 title: "Auto bolo úspešne pridané !"
             })
-            handleCloseModal();
+            handleCloseFormModal();
         },
         onError: () => {
             toast.error({
@@ -113,7 +118,7 @@ function update(){
         toast.error({
             title: "Nevybrali ste auto na úpravu !"
         })
-        handleCloseModal();
+        handleCloseFormModal();
         return;
     }
     formState.processing.form = true;
@@ -124,7 +129,7 @@ function update(){
             toast.success({
                 title: "Auto bolo úspešne upravené !"
             });
-            handleCloseModal();
+            handleCloseFormModal();
         },
         onError: () => {
             toast.error({
@@ -188,23 +193,24 @@ const filterByRegistrationNumber = ref<'has_reg_num' | 'without_reg_num' | 'all'
 const filterByRegistration = ref<'registered' | 'not_registered' | 'all'>('all');
 const filterByParts = ref<'has_parts' | 'without_parts' | 'all'>('all')
 
-const displayedCars = computed(() => props.cars.filter((car) => filterByRegistration.value === 'all'
+const displayedCars = computed(() =>
+    props.cars.filter((car) => (filterByRegistration.value === 'all'
     || (filterByRegistration.value === 'registered' && car.is_registered)
     || (filterByRegistration.value === 'not_registered' && !car.is_registered))
 
-    .filter((car) => filterByParts.value === 'all'
-        || (filterByParts.value === 'has_parts' && car.parts?.length)
-        || (filterByParts.value === 'without_parts' && !car.parts?.length))
+    && (filterByParts.value === 'all'
+    || (filterByParts.value === 'has_parts' && car.parts?.length)
+    || (filterByParts.value === 'without_parts' && !car.parts?.length))
 
-    .filter((car) => filterByRegistrationNumber.value === 'all'
-        || (filterByRegistrationNumber.value === 'has_reg_num' && car.registration_number)
-        || (filterByRegistrationNumber.value === 'without_reg_num' && !car.registration_number))
+    && (filterByRegistrationNumber.value === 'all'
+    || (filterByRegistrationNumber.value === 'has_reg_num' && car.registration_number)
+    || (filterByRegistrationNumber.value === 'without_reg_num' && !car.registration_number))
 
-    .filter((car) => car.name.toLowerCase().includes(searchByName.value.toLowerCase()))
+    && (car.name.toLowerCase().includes(searchByName.value.toLowerCase()))
 
-    .filter((car) => (searchByRegistrationNumber.value && car?.registration_number?.toUpperCase().includes(searchByRegistrationNumber.value.toUpperCase()))
-        || (!searchByRegistrationNumber.value)));
-
+    && (!searchByRegistrationNumber.value)
+    || ((car.registration_number ?? '').toUpperCase().includes(searchByRegistrationNumber.value.toUpperCase())))
+);
 </script>
 
 <template>
@@ -233,7 +239,7 @@ const displayedCars = computed(() => props.cars.filter((car) => filterByRegistra
                             <option value="without_parts">Nemá diely</option>
                         </select>
 
-                        <select v-model="filterByRegistrationNumber" class="form-select">
+                        <select v-model="filterByRegistrationNumber" :disabled="searchByRegistrationNumber.toString().length > 0" class="form-select">
                           <option value="all">Všetky autá</option>
                           <option value="has_reg_num">S EČV</option>
                           <option value="without_reg_num">Bez EČV</option>
@@ -256,13 +262,13 @@ const displayedCars = computed(() => props.cars.filter((car) => filterByRegistra
             </div>
 
             <div v-if="!displayedCars.length" class="text-center text-muted py-5">
-                <p class="fs-5">Nenašli sa žiadne vozidlá.</p>
+                <p class="fs-5">Nenašli sa žiadne autá.</p>
             </div>
         </div>
     </AppLayout>
 
     <Modal :title="formState.mode === 'add' ? 'Atribúty auta' : 'Úprava atribútov auta' " :mode="formState.mode" :is-modal-open="isFormModalOpen" button-title="auto" :processing="formState.processing.form"
-           @close="handleCloseModal" @confirm="handleSubmitModal">
+           @close="handleCloseFormModal" @confirm="handleSubmitModal">
         <CarInputs :form="formState.form" :parts="parts" :car="formState.carToHandle"/>
     </Modal>
 
@@ -273,7 +279,7 @@ const displayedCars = computed(() => props.cars.filter((car) => filterByRegistra
 
     <Modal title="Zoznam dielov priradených k autu" mode="info" :is-modal-open="isInfoModalOpen" button-title="" :processing="false" @close="closeInfoModal">
         <div v-if="!carParts.length">
-            Žiadne diely nepriradené k tomuto autu
+            Žiadne diely niesu priradené k tomuto autu.
         </div>
         <div v-else v-for="part in carParts" :key="part.id" class="card mb-2">
             <div class="card-body">

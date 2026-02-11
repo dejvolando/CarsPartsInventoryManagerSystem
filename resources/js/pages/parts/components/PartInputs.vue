@@ -43,7 +43,7 @@ defineProps<{
     <div class="d-flex flex-column  align-items-start gap-2">
         <label for="selectCar" class="form-label">Priradiť k autu</label>
         <select v-model="form.car_id"  class="form-select" id="selectCar">
-            <option :value="NaN">Žiadne auto</option>
+            <option :value="null">Žiadne auto</option>
             <option v-for="car in cars" :key="car.id" :value="car.id">{{car.name + ': ' + (car.registration_number ?? 'Bez EČV')}}</option>
         </select>
     </div>

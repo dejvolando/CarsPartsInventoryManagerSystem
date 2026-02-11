@@ -29,5 +29,5 @@ Route::controller(PartController::class)->prefix('parts')->name('parts.')->group
 });
 
 Route::fallback(function () {
-   return redirect('/');
+   return redirect()->route('home');
 });

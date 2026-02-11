@@ -30,11 +30,11 @@ defineEmits<{
       <div class="d-flex gap-2 mt-auto pt-3 border-top">
         <EditButton
             @click="$emit('edit', part)"
-            title="diel"
+            title=""
             class="flex-grow-1 justify-content-center"/>
         <DeleteButton
             @click.prevent="$emit('delete', part)"
-            title="diel"
+            title=""
             class="flex-grow-1 justify-content-center"/>
       </div>
     </div>

@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const formState = reactive({
-    form: useForm({name: '', serial_number: '', car_id: NaN}),
+    form: useForm({name: '', serial_number: '', car_id: null as number | null}),
     mode: 'add' as 'edit' | 'add' | 'delete',
     partToHandle: null as Part | null,
     processing: {form: false, deleteOne: false}
@@ -35,7 +35,7 @@ function openFormModal(mode: 'edit' | 'add', part?: Part){
     if(mode === 'edit' && formState.partToHandle){
         formState.form.name = formState.partToHandle.name;
         formState.form.serial_number = formState.partToHandle.serial_number;
-        formState.form.car_id = formState.partToHandle.car_id ?? NaN;
+        formState.form.car_id = formState.partToHandle.car_id ?? null;
     }
 }
 
@@ -46,6 +46,13 @@ function openAddModal(){
 function openEditModal(part: Part){
     openFormModal('edit', part);
 }
+
+//close edit/add form
+function handleCloseFormModal(){
+  isFormModalOpen.value = false;
+  resetForm();
+}
+
 
 //delete modal opening/closing
 const isDeleteModalOpen = ref(false);
@@ -60,10 +67,6 @@ function closeDeleteModal(){
     resetForm();
 }
 
-function handleCloseModal(){
-    isFormModalOpen.value = false;
-    resetForm();
-}
 
 //submitting add/edit/delete
 function handleSubmitModal(){
@@ -92,7 +95,7 @@ function create(){
             toast.success({
                 title: "Diel auta bol úspešne pridaný !"
             });
-            handleCloseModal();
+            handleCloseFormModal();
         },
         onError: () => {
             toast.error({
@@ -111,6 +114,7 @@ function update(){
         toast.error({
             title: "Nezvolili ste diel na úpravu !"
         })
+        handleCloseFormModal();
         return;
     }
 
@@ -121,7 +125,7 @@ function update(){
             toast.success({
                 title: "Diel auta bol úspešne upravený !"
             });
-            handleCloseModal();
+            handleCloseFormModal();
         },
         onError: () => {
             toast.error({
@@ -140,6 +144,7 @@ function remove(){
         toast.error({
             title: "Nezvolili ste diel na mazanie !"
         })
+        closeDeleteModal();
         return;
     }
 
@@ -167,11 +172,15 @@ function remove(){
 const searchByName = ref('');
 const searchBySerialNumber = ref('');
 const filterByAssignedToCar = ref<'assigned' | 'not_assigned' | 'all'>('all');
-const displayedParts = computed(() => props.parts.filter((part) => filterByAssignedToCar.value === 'all'
+const displayedParts = computed(() =>
+    props.parts.filter((part) => (filterByAssignedToCar.value === 'all'
     || (filterByAssignedToCar.value === 'assigned' && part.car_id != null)
     || (filterByAssignedToCar.value === 'not_assigned' && !part.car_id))
-    .filter((part) => part.name.toLowerCase().includes(searchByName.value.toLowerCase()))
-    .filter((part) => part?.serial_number?.toUpperCase().includes(searchBySerialNumber.value.toUpperCase())))
+
+    && (part.name.toLowerCase().includes(searchByName.value.toLowerCase()))
+
+    && (part.serial_number.toUpperCase().includes(searchBySerialNumber.value.toUpperCase())))
+);
 
 </script>
 
@@ -213,7 +222,7 @@ const displayedParts = computed(() => props.parts.filter((part) => filterByAssig
     </AppLayout>
 
     <Modal :title="formState.mode === 'edit' ? 'Úprava atribútov dielu' : 'Atribúty dielu'" :mode="formState.mode" :is-modal-open="isFormModalOpen" button-title="diel" :processing="formState.processing.form"
-           @close="handleCloseModal" @confirm="handleSubmitModal">
+           @close="handleCloseFormModal" @confirm="handleSubmitModal">
         <PartInputs :form="formState.form" :cars="cars"/>
     </Modal>
 
@@ -222,7 +231,3 @@ const displayedParts = computed(() => props.parts.filter((part) => filterByAssig
         Naozaj chcete vymazať tento diel ?
     </Modal>
 </template>
-
-<style scoped>
-
-</style>
