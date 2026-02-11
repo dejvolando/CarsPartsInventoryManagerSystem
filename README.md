@@ -1,12 +1,15 @@
-Po naklonovani projektu je potrebne zadat nasledujuce prikazy do terminalu:
+# Po naklonovani projektu je potrebne zadat nasledujuce prikazy do terminalu:
+
     composer install
     cp .env.example .env
     php artisan key:generate
     npm install
-Ako server na databazu som pouzil XAMPP Apache + MySQL
-nasledne po naklonovani projektu a jeho na spustenie projektu je potrebne zadat
+    
+# Nasledne po naklonovani projektu a jeho na spustenie projektu je potrebne zadat
+
     php artisan serve
-    npm run dev/build
+    npm run build alebo npm run dev
+# Ako server na databazu som pouzil XAMPP Apache + MySQL
 
 # Laravel + Vue Starter Kit 
 
@@ -33,5 +36,6 @@ In order to ensure that the Laravel community is welcoming to all, please review
 ## License
 
 The Laravel + Vue starter kit is open-sourced software licensed under the MIT license.
-#   C a r s P a r t s I n v e n t o r y M a n a g e r S y s t e m  
+#   C a r s P a r t s I n v e n t o r y M a n a g e r S y s t e m 
+ 
  
