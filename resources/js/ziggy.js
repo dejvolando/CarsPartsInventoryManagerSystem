@@ -1,0 +1,5 @@
+const Ziggy = {"url":"http:\/\/localhost:8000","port":8000,"defaults":{},"routes":{"home":{"uri":"\/","methods":["GET","HEAD"]},"cars.index":{"uri":"cars","methods":["GET","HEAD"]},"cars.store":{"uri":"cars","methods":["POST"]},"cars.update":{"uri":"cars\/{car}","methods":["PATCH"],"parameters":["car"],"bindings":{"car":"id"}},"cars.delete":{"uri":"cars\/{car}","methods":["DELETE"],"parameters":["car"],"bindings":{"car":"id"}},"parts.index":{"uri":"parts","methods":["GET","HEAD"]},"parts.store":{"uri":"parts","methods":["POST"]},"parts.update":{"uri":"parts\/{part}","methods":["PATCH"],"parameters":["part"],"bindings":{"part":"id"}},"parts.delete":{"uri":"parts\/{part}","methods":["DELETE"],"parameters":["part"],"bindings":{"part":"id"}},"storage.local":{"uri":"storage\/{path}","methods":["GET","HEAD"],"wheres":{"path":".*"},"parameters":["path"]}}};
+if (typeof window !== 'undefined' && typeof window.Ziggy !== 'undefined') {
+  Object.assign(Ziggy.routes, window.Ziggy.routes);
+}
+export { Ziggy };
