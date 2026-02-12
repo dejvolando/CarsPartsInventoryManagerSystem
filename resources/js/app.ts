@@ -25,7 +25,7 @@ createInertiaApp({
                 width: '350px',
                 zIndex: 9999,
                 overflowScroll: false,
-                duration: 3000,
+                duration: 2000,
                 maxVisible: 5,
                 preventDuplicates: false,
                 order: 'newest',

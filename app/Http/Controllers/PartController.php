@@ -22,7 +22,7 @@ class PartController extends Controller
         $validated = $request->validated();
 
         //always change serial_number to uppercase
-        $validated['serial_number'] = strtoupper($validated['serial_number']);
+        $validated['serial_number'] = mb_strtoupper($validated['serial_number']);
 
         Part::create($validated);
 
@@ -33,7 +33,7 @@ class PartController extends Controller
         $validated = $request->validated();
 
         //always change serial_number to uppercase
-        $validated['serial_number'] = strtoupper($validated['serial_number']);
+        $validated['serial_number'] = mb_strtoupper($validated['serial_number']);
 
         $part->update($validated);
 

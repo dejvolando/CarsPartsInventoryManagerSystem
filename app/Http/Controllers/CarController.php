@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCarRequest;
 use App\Http\Requests\UpdateCarRequest;
 use App\Models\Car;
 use App\Models\Part;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CarController extends Controller
@@ -22,7 +23,7 @@ class CarController extends Controller
         $validated = $request->validated();
 
         if(!empty($validated['registration_number'])){
-            $validated['registration_number'] = strtoupper($validated['registration_number']);
+            $validated['registration_number'] = mb_strtoupper($validated['registration_number']);
         }
 
         $car = Car::create($validated);
@@ -38,13 +39,13 @@ class CarController extends Controller
         $validated = $request->validated();
 
         if(!empty($validated['registration_number'])){
-            $validated['registration_number'] = strtoupper($validated['registration_number']);
+            $validated['registration_number'] = mb_strtoupper($validated['registration_number']);
         }
 
         $car->update($validated);
 
         $newPartIDs = $validated['parts'] ?? [];
-        $currentCarPartIDs = $car->parts()->pluck('id')->toArray();
+        $currentCarPartIDs = $car->parts()->pluck('id')->toArray();//picks ids from collection and puts them into an array
 
         $detachPartsIDs = array_diff($currentCarPartIDs, $newPartIDs); //returns ids that are currently attached to the car but missing in the newPartIDs
         $attachPartsIDs = array_diff($newPartIDs, $currentCarPartIDs); //returns ids that are not attached to the car but are present in the newPartIDs
@@ -58,18 +59,25 @@ class CarController extends Controller
         return redirect()->back();
     }
 
-    public function destroy(Car $car)
+    public function destroy(Request $request,Car $car)
     {
+        $validated = $request->validate([
+            'deleteWithParts' => 'nullable|boolean'
+        ]);
+
+        if($validated['deleteWithParts']){
+            $car->parts()->delete();
+        }
         $car->delete();
 
         return redirect()->back();
     }
 
     //helper function for attaching parts
-    private function attachParts(array $partIds, Car $car){
-        if(!empty($partIds)){
+    private function attachParts(array $partIDs, Car $car){
+        if(!empty($partIDs)){
             Part::whereNull('car_id')
-                ->whereIn('id', $partIds)
+                ->whereIn('id', $partIDs)
                 ->update(['car_id' => $car->id]);
         }
     }

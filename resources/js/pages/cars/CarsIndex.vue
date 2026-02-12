@@ -57,7 +57,11 @@ function handleCloseFormModal(){
 
 //open close delete modal
 const isDeleteModalOpen = ref(false);
+const deleteWithParts = ref(false);
 function openDeleteModal(car: Car){
+    if(!car){
+        return;
+    }
     isDeleteModalOpen.value = true;
     formState.carToHandle = car;
     formState.mode = 'delete'
@@ -65,6 +69,7 @@ function openDeleteModal(car: Car){
 
 function closeDeleteModal(){
     isDeleteModalOpen.value = false;
+    deleteWithParts.value = false;
     resetForm();
 }
 
@@ -153,7 +158,7 @@ function remove(){
     }
     formState.processing.deleteOne = true
 
-    router.delete(route('cars.delete', {car: formState.carToHandle}), {
+    router.delete(route('cars.delete', {deleteWithParts: deleteWithParts.value, car: formState.carToHandle}), {
         preserveScroll: true,
         onSuccess: () => {
             toast.success({
@@ -168,6 +173,7 @@ function remove(){
         },
         onFinish: () => {
             formState.processing.deleteOne = false;
+            deleteWithParts.value = false;
         }
     })
 }
@@ -194,12 +200,10 @@ const filterByRegistration = ref<'registered' | 'not_registered' | 'all'>('all')
 const filterByParts = ref<'has_parts' | 'without_parts' | 'all'>('all')
 
 const displayedCars = computed(() =>
-    props.cars.filter((car) =>
-    (
-        filterByRegistration.value === 'all'
+    props.cars.filter((car) => (filterByRegistration.value === 'all'
     || (filterByRegistration.value === 'registered' && car.is_registered)
-    || (filterByRegistration.value === 'not_registered' && !car.is_registered)
-    )
+    || (filterByRegistration.value === 'not_registered' && !car.is_registered))
+
     && (filterByParts.value === 'all'
     || (filterByParts.value === 'has_parts' && car.parts?.length)
     || (filterByParts.value === 'without_parts' && !car.parts?.length))
@@ -223,7 +227,7 @@ const displayedCars = computed(() =>
             <div class="d-flex flex-column flex-lg-row gap-3 align-items-lg-center justify-content-between p-4">
                 <div class="d-flex flex-column flex-md-row gap-2 flex-grow-1">
                     <form class="flex-grow-1" role="search" @submit.prevent>
-                        <input v-model="searchByName" class="form-control" type="search" placeholder="Zadajte názov auta"/>
+                        <input v-model="searchByName"  class="form-control"  type="search" placeholder="Zadajte názov auta"/>
                     </form>
                     <form class="flex-grow-1" role="search" @submit.prevent>
                       <input v-model="searchByRegistrationNumber" :disabled="filterByRegistrationNumber === 'without_reg_num'" class="form-control" type="search" placeholder="Zadajte EČV auta"/>
@@ -276,7 +280,19 @@ const displayedCars = computed(() =>
 
     <Modal title="Vymazať auto" mode="delete" :is-modal-open="isDeleteModalOpen" button-title="" :processing="formState.processing.deleteOne"
            @close="closeDeleteModal" @confirm="handleSubmitModal">
-        Naozaj chcete vymazať toto auto ?
+        <strong>Naozaj chcete vymazať toto auto ?</strong>
+        <div v-if="(formState.carToHandle?.parts?.length ?? 0) > 0" class="form-check form-switch d-flex align-items-center gap-2 mb-3 mt-1">
+            <input
+                v-model="deleteWithParts"
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="deleteWithPartsSwitch"
+                style="cursor: pointer;">
+            <label class="form-check-label cursor-pointer" for="deleteWithPartsSwitch">
+                Vymazať aj diely priradené k tomuto autu.
+            </label>
+        </div>
     </Modal>
 
     <Modal title="Zoznam dielov priradených k autu" mode="info" :is-modal-open="isInfoModalOpen" button-title="" :processing="false" @close="closeInfoModal">
