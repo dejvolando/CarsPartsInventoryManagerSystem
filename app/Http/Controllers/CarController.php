@@ -51,7 +51,7 @@ class CarController extends Controller
         $attachPartsIDs = array_diff($newPartIDs, $currentCarPartIDs); //returns ids that are not attached to the car but are present in the newPartIDs
 
         if(!empty($detachPartsIDs)){
-            Part::whereIn('id', $detachPartsIDs)->update(['car_id' => null]);
+            $car->parts()->whereIn('id', $detachPartsIDs)->update(['car_id' => null]);
         }
 
         $this->attachParts($attachPartsIDs, $car);
