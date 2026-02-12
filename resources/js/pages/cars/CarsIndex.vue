@@ -194,10 +194,12 @@ const filterByRegistration = ref<'registered' | 'not_registered' | 'all'>('all')
 const filterByParts = ref<'has_parts' | 'without_parts' | 'all'>('all')
 
 const displayedCars = computed(() =>
-    props.cars.filter((car) => (filterByRegistration.value === 'all'
+    props.cars.filter((car) =>
+    (
+        filterByRegistration.value === 'all'
     || (filterByRegistration.value === 'registered' && car.is_registered)
-    || (filterByRegistration.value === 'not_registered' && !car.is_registered))
-
+    || (filterByRegistration.value === 'not_registered' && !car.is_registered)
+    )
     && (filterByParts.value === 'all'
     || (filterByParts.value === 'has_parts' && car.parts?.length)
     || (filterByParts.value === 'without_parts' && !car.parts?.length))
@@ -208,8 +210,8 @@ const displayedCars = computed(() =>
 
     && (car.name.toLowerCase().includes(searchByName.value.toLowerCase()))
 
-    && (!searchByRegistrationNumber.value)
-    || ((car.registration_number ?? '').toUpperCase().includes(searchByRegistrationNumber.value.toUpperCase())))
+    && (!searchByRegistrationNumber.value
+    || ((car.registration_number ?? '').toUpperCase().includes(searchByRegistrationNumber.value.toUpperCase()))))
 );
 </script>
 

@@ -14,7 +14,6 @@ class StoreCarRequest extends FormRequest
         'registration_number.unique' => "Zadané :attribute je už zabraté !",
         'registration_number.max' => "Pole :attribute musí mať :max znakov !",
         'registration_number.min' => "Pole :attribute musí mať :min znakov !",
-        'registration_number.regex' => "Pole :attribute nespĺňa formát AB123XY",
     ];
 
     /**
@@ -41,7 +40,6 @@ class StoreCarRequest extends FormRequest
                 'string',
                 'min:7',
                 'max:7',
-                'regex:/^[A-Za-z]{2}[0-9]{3}[A-Za-z]{2}$/',
             ],
             'is_registered' => 'boolean',
             'parts' => 'nullable|array'

@@ -23,9 +23,9 @@ import { Link } from '@inertiajs/vue3';
 
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 gap-lg-2 gap-2 text-center">
-            <Link class="nav-link bg-primary rounded text-white" :href="route('home')">Domov</Link>
-            <Link class="nav-link bg-primary rounded text-white" :href="route('cars.index')">Autá</Link>
-            <Link class="nav-link bg-primary rounded text-white " :href="route('parts.index')">Diely</Link>
+            <Link class="nav-link bg-primary rounded text-white" :href="route('home')"><i class="bi bi-house-fill me-2"/>Domov</Link>
+            <Link class="nav-link bg-primary rounded text-white" :href="route('cars.index')"> <i class="bi bi-car-front-fill me-2"/>Autá</Link>
+            <Link class="nav-link bg-primary rounded text-white " :href="route('parts.index')"><i class="bi bi-wrench me-2"/>Diely</Link>
           </ul>
         </div>
       </div>
